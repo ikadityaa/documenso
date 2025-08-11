@@ -90,7 +90,13 @@ php artisan db:seed --class=RoleSeeder
   ```
 - Super Admin can create Admins and assign role `admin`.
 
-10) Serve the app
+10) Web installer
+
+- Point your browser to your app URL. You will be redirected to `/install`.
+- Complete steps: requirements -> environment -> create super admin -> finish.
+- After finishing, the app will be marked installed and the installer is disabled.
+
+11) Serve the app
 
 ```bash
 php artisan serve
@@ -126,3 +132,23 @@ Visit: `http://127.0.0.1:8000`
 ## Customization
 - Adjust token TTL in `QRController` (`TOKEN_TTL_MINUTES`)
 - Extend `TutoringSession` fields as needed (subjects, groups, etc.)
+
+## Production deployment
+
+- Web server
+  - Nginx: point root to `public/`, enable `try_files $uri /index.php?$query_string;`
+  - Apache: enable mod_rewrite and use Laravel `.htaccess` in `public/`
+- PHP: 8.2+ with required extensions (bcmath, ctype, fileinfo, json, mbstring, openssl, pdo, tokenizer, xml)
+- Permissions: `storage` and `bootstrap/cache` writable by the web user
+- Environment: set `APP_ENV=production`, `APP_DEBUG=false`, proper `APP_URL`
+- Caching (recommended):
+  ```bash
+  php artisan config:cache
+  php artisan route:cache
+  php artisan view:cache
+  php artisan event:cache
+  ```
+- Queues (optional): configure `QUEUE_CONNECTION` and run a worker if needed
+- Backups: schedule regular DB and storage backups
+- HTTPS: enforce TLS and set `SESSION_SECURE_COOKIE=true` if behind HTTPS
+- Timezone: set `APP_TIMEZONE` if different from default
